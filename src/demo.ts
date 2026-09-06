@@ -7,15 +7,16 @@ const now = new Date();
 const ownerHandle = "owner";
 const window = resolveWindow(now, null);
 const provider = MockXProvider.sample(now, ownerHandle);
-const posts = applyPreferences(
-  await provider.fetchOwnerPosts({
+const items = applyPreferences(
+  await provider.fetchFeed({
     since: window.since,
     until: window.until,
     ownerHandle,
   }),
   DEFAULT_PREFERENCES,
+  ownerHandle,
 );
 
 process.stdout.write(
-  `${formatReport({ window, posts, ownerHandle, now })}\n`,
+  `${formatReport({ window, items, ownerHandle, now })}\n`,
 );

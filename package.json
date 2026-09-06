@@ -2,7 +2,7 @@
   "name": "grook",
   "version": "1.0.0",
   "private": true,
-  "description": "LINE 群組 bot：被 @ 時整理主人自己的 X 貼文與轉發",
+  "description": "LINE 群組 bot：被 @ 時整理時間軸與跟隨中帳號的新貼文通知",
   "type": "module",
   "engines": {
     "node": ">=20"

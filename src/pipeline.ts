@@ -23,15 +23,15 @@ export async function runMentionSummary(
 ): Promise<RunMentionSummaryResult> {
   const lastSuccessAt = await input.store.getLastSuccessAt(input.groupId);
   const window = resolveWindow(input.now, lastSuccessAt);
-  const posts = await input.xProvider.fetchOwnerPosts({
+  const items = await input.xProvider.fetchFeed({
     since: window.since,
     until: window.until,
     ownerHandle: input.ownerHandle,
   });
-  const filtered = applyPreferences(posts, input.preferences);
+  const filtered = applyPreferences(items, input.preferences, input.ownerHandle);
   const text = formatReport({
     window,
-    posts: filtered,
+    items: filtered,
     ownerHandle: input.ownerHandle,
     now: input.now,
   });

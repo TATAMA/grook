@@ -1,4 +1,4 @@
-import type { FetchOwnerPostsParams, XPost, XProvider } from "./types.js";
+import type { FetchFeedParams, XFeedItem, XProvider } from "./types.js";
 
 /**
  * Official X API adapter. v1 is intentionally unimplemented.
@@ -12,7 +12,7 @@ export class ApiXProvider implements XProvider {
     },
   ) {}
 
-  async fetchOwnerPosts(_params: FetchOwnerPostsParams): Promise<XPost[]> {
+  async fetchFeed(_params: FetchFeedParams): Promise<XFeedItem[]> {
     throw new Error(
       "ApiXProvider is not implemented in v1. Set X_PROVIDER=mock. Do not use scraping.",
     );

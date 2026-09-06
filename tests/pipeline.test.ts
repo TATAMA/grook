@@ -52,8 +52,10 @@ describe("runMentionSummary", () => {
       now: NOW,
     });
     assert.match(result.text, /過去 6 小時/);
-    assert.match(result.text, /webhook 骨架/);
+    assert.match(result.text, /時間軸/);
+    assert.match(result.text, /@alice/);
     assert.doesNotMatch(result.text, /超過 24 小時/);
+    assert.doesNotMatch(result.text, /連接錢包|未跟隨|@owner 看一下這個|自己的貼文/);
   });
 });
 
@@ -121,7 +123,7 @@ describe("handleWebhookEvent", () => {
     const store = new MemoryLastMentionStore();
     const replies: string[] = [];
     const failingProvider: XProvider = {
-      async fetchOwnerPosts() {
+      async fetchFeed() {
         throw new Error("boom");
       },
     };

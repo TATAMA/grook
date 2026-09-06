@@ -6,31 +6,35 @@ import { MockXProvider } from "../src/x/mock.js";
 const NOW = new Date("2026-09-07T12:00:00.000Z");
 
 describe("MockXProvider", () => {
-  it("returns originals and reposts inside the window and drops older posts", async () => {
+  it("returns timeline and followed notifications inside the window", async () => {
     const provider = MockXProvider.sample(NOW, "owner");
-    const posts = await provider.fetchOwnerPosts({
+    const items = await provider.fetchFeed({
       since: new Date(NOW.getTime() - 24 * 60 * 60 * 1000),
       until: NOW,
       ownerHandle: "owner",
     });
-    assert.deepEqual(
-      posts.map((post) => post.id),
-      ["mock-repost-recent", "mock-original-recent"],
-    );
+    const ids = items.map((item) => item.id);
+    assert.equal(ids.includes("mock-timeline-alice"), true);
+    assert.equal(ids.includes("mock-timeline-bob-repost"), true);
+    assert.equal(ids.includes("mock-notify-carol"), true);
+    assert.equal(ids.includes("mock-notify-unfollowed-mention"), true);
+    assert.equal(ids.includes("mock-scam-airdrop"), true);
+    assert.equal(ids.includes("mock-own-post"), true);
+    assert.equal(ids.includes("mock-too-old"), false);
     assert.equal(
-      posts.every((post) => !("likes" in post) && !("replies" in post) && !("views" in post)),
+      items.every((item) => !("likes" in item) && !("replies" in item) && !("views" in item)),
       true,
     );
   });
 
-  it("returns nothing when the window is shorter than the newest mock post", async () => {
+  it("returns nothing when the window is shorter than the newest mock item", async () => {
     const provider = MockXProvider.sample(NOW, "owner");
-    const posts = await provider.fetchOwnerPosts({
+    const items = await provider.fetchFeed({
       since: new Date(NOW.getTime() - 30 * 60 * 1000),
       until: NOW,
       ownerHandle: "owner",
     });
-    assert.equal(posts.length, 0);
+    assert.equal(items.length, 0);
   });
 });
 
@@ -42,7 +46,7 @@ describe("ApiXProvider", () => {
     });
     await assert.rejects(
       () =>
-        provider.fetchOwnerPosts({
+        provider.fetchFeed({
           since: new Date(NOW.getTime() - 3600_000),
           until: NOW,
           ownerHandle: "owner",
