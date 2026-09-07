@@ -81,25 +81,17 @@ npm run dev
 
 `X_PROVIDER=api` 目前會在抓貼文時丟出 TODO 錯誤，**不要用違規爬蟲當預設。**
 
-## 用 ngrok 測 LINE webhook
+## 測 LINE webhook
 
-1. 本機 `npm run dev`（預設 `http://localhost:3000`）。
-2. 另開終端：`ngrok http 3000`。
-3. 到 [LINE Developers Console](https://developers.line.biz/console/) 開啟你的 Messaging API channel。
-4. Webhook URL 填：`https://<ngrok 網域>/webhook`
-5. 開啟 Use webhook，用 Console 的 Verify 確認簽章通過。
-6. 把 LINE Official Account 加進群組，在群組裡 **@Grook**。
+完整步驟（含 Cloudflare Tunnel、Pi、換機器）見 **`docs/setup.md`**。
 
-本機 mock 模式下，回覆內容是假的 X 貼文，用來確認「只有被 @ 才回、時間窗、報表文字」整條路是通的。
+最短：`npm run dev` → 把 `http://127.0.0.1:3000` 用 **cloudflared** 或 ngrok 曝成 HTTPS → Console 填 `https://<主機>/webhook` → Verify → 群組 **@ 選單選 Grook**。
 
-## 之後放到 Railway 的大綱
+本機 `X_PROVIDER=mock` 時回的是假時間軸。`@Grook 迷因` 走迷因報告。
 
-1. 用這個 GitHub repo 建立 Railway service。
-2. 在 Railway Variables 填與 `.env.example` 相同的鍵（真實值，不要寫進程式）。
-3. Build：`npm install && npm run build`；Start：`npm start`。
-4. Healthcheck 指到 `GET /health`。
-5. 把 Railway 公開網域的 `https://<domain>/webhook` 填回 LINE Developers。
-6. `DATA_DIR` 請指到持久化 volume，否則重啟會忘記「上次成功 @」的時間。
+## 之後 24 小時在線
+
+現況是本機或 Pi + Cloudflare Tunnel（網址會變）。要固定網域再上 VPS／Railway：變數鍵名對 `.env.example`，Start `npm start`，Healthcheck `GET /health`，Webhook `https://<網域>/webhook`，`DATA_DIR` 掛持久化磁碟。詳見 `docs/setup.md`。
 
 ## 專案結構
 
