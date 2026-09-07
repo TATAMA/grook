@@ -19,6 +19,7 @@ const config: AppConfig = {
   xProvider: "mock",
   xOwnerHandle: "owner",
   xBearerToken: "replace_me",
+  memeProvider: "mock",
   dataDir: "/tmp/grook-test",
 };
 
@@ -167,6 +168,55 @@ describe("HTTP endpoints", () => {
       assert.equal(replies.length, 1);
       assert.match(replies[0] ?? "", /Grook 整理/);
       assert.equal((await store.getLastSuccessAt("Cgroup1"))?.toISOString(), NOW.toISOString());
+    } finally {
+      await close();
+    }
+  });
+
+  it("POST /webhook runs meme digest without advancing last-mention", async () => {
+    const replies: string[] = [];
+    const store = new MemoryLastMentionStore();
+    const app = createApp({
+      config,
+      store,
+      xProvider: MockXProvider.sample(NOW, "owner"),
+      lineClient: {
+        async replyText(_token, text) {
+          replies.push(text);
+        },
+      },
+      preferences: DEFAULT_PREFERENCES,
+      now: () => NOW,
+    });
+    const { baseUrl, close } = await listen(app);
+    const body = JSON.stringify({
+      destination: "Ubot",
+      events: [
+        {
+          type: "message",
+          replyToken: "reply-token-meme",
+          source: { type: "group", groupId: "Cgroup2", userId: "Uuser" },
+          message: {
+            type: "text",
+            text: "@Grook 迷因",
+            mention: { mentionees: [{ index: 0, length: 6, type: "user", isSelf: true }] },
+          },
+        },
+      ],
+    });
+    try {
+      const res = await fetch(`${baseUrl}/webhook`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Line-Signature": sign(body),
+        },
+        body,
+      });
+      assert.equal(res.status, 200);
+      assert.equal(replies.length, 1);
+      assert.match(replies[0] ?? "", /迷因敘事/);
+      assert.equal(await store.getLastSuccessAt("Cgroup2"), null);
     } finally {
       await close();
     }

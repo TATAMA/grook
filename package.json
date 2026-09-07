@@ -12,7 +12,7 @@
     "start": "node dist/index.js",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --import tsx --test",
+    "test": "node --import tsx --test tests/config.test.ts tests/filter.test.ts tests/intent.test.ts tests/mention.test.ts tests/meme.test.ts tests/pipeline.test.ts tests/report.test.ts tests/store.test.ts tests/webhook.test.ts tests/window.test.ts tests/x-provider.test.ts",
     "demo": "tsx src/demo.ts"
   },
   "dependencies": {

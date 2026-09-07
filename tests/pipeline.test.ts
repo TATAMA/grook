@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { handleWebhookEvent, type LineTextEvent } from "../src/line/handler.js";
 import { runMentionSummary } from "../src/pipeline.js";
@@ -19,6 +19,7 @@ const config: AppConfig = {
   xProvider: "mock",
   xOwnerHandle: "owner",
   xBearerToken: "replace_me",
+  memeProvider: "mock",
   dataDir: "/tmp/grook-test",
 };
 
@@ -145,3 +146,4 @@ describe("handleWebhookEvent", () => {
     assert.equal(await store.getLastSuccessAt("Cgroup1"), null);
   });
 });
+

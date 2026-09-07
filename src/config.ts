@@ -1,6 +1,7 @@
 import path from "node:path";
 
 export type XProviderName = "mock" | "api";
+export type MemeProviderName = "mock" | "live";
 
 export interface AppConfig {
   port: number;
@@ -10,6 +11,7 @@ export interface AppConfig {
   xProvider: XProviderName;
   xOwnerHandle: string;
   xBearerToken: string;
+  memeProvider: MemeProviderName;
   dataDir: string;
 }
 
@@ -41,6 +43,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     throw new Error(`X_PROVIDER must be "mock" or "api", got "${providerRaw}"`);
   }
 
+  const memeRaw = readOptional(env, "MEME_PROVIDER", "mock");
+  if (memeRaw !== "mock" && memeRaw !== "live") {
+    throw new Error(`MEME_PROVIDER must be "mock" or "live", got "${memeRaw}"`);
+  }
+
   const portRaw = readOptional(env, "PORT", "3000");
   const port = Number.parseInt(portRaw, 10);
   if (!Number.isInteger(port) || port <= 0) {
@@ -55,6 +62,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     xProvider: providerRaw,
     xOwnerHandle: readOptional(env, "X_OWNER_HANDLE", "replace_me"),
     xBearerToken: readOptional(env, "X_BEARER_TOKEN", "replace_me"),
+    memeProvider: memeRaw,
     dataDir: path.resolve(readOptional(env, "DATA_DIR", "./data")),
   };
 }

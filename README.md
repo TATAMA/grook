@@ -1,4 +1,4 @@
-# Grook
+﻿# Grook
 
 LINE 群組 bot：只有群組裡有人 **@Grook**（或 bot 顯示名）時才回覆，整理你的 X **時間軸**，以及 **你有跟隨的帳號** 的新貼文通知。
 
@@ -16,6 +16,16 @@ v1 **不做**每小時自動推播，也 **不包含**讚、回覆、瀏覽等�
   - **略過**你自己的貼文、明顯詐騙（空投／連錢包／助記詞等）、以及「未跟隨卻 @ 你」的通知
   - 之後若要增刪回報欄位，改 `src/preferences` 即可。
 - 上次成功 @ 的時間存在本機 `./data/last-mention.json`（已 gitignore）。
+
+
+## 迷因敘事（按需）
+
+群組裡 **@Grook** 且訊息含 `迷因`／`敘事`／`meme`／`narrative` 時，改跑迷因敘事調研報告（詳見 `docs/meme-narrative.md`）。
+
+- 沒有上述關鍵字 → 仍走原本的 X 整理
+- **不會**排程自動推迷因日報到 LINE
+- 預設 `MEME_PROVIDER=mock`；可選 `live`（DexScreener 公開 API，敘事仍嚴篩）
+- 迷因指令**不會**推進「上次成功 @」的 X 時間窗
 
 ## 需求
 
@@ -55,6 +65,8 @@ npm run dev
 
 把 `.env.example` 複製成 `.env`，把 `replace_me` 換成真實值。**.env 不要 commit。**
 
+**每次在新機器／雲端重填資料，請跟 `docs/setup.md` 做**（從哪裡複製、哪些可留 mock、Webhook 怎麼接）。下面是速查表。
+
 | 變數 | 說明 |
 | --- | --- |
 | `LINE_CHANNEL_SECRET` | LINE Channel secret，用來驗證 webhook 簽章 |
@@ -65,6 +77,7 @@ npm run dev
 | `X_BEARER_TOKEN` | 之後接官方 X API 用；mock 模式不需要真的值 |
 | `PORT` | 預設 `3000` |
 | `DATA_DIR` | 預設 `./data` |
+| `MEME_PROVIDER` | `mock`（預設）或 `live`（DexScreener 公開 API） |
 
 `X_PROVIDER=api` 目前會在抓貼文時丟出 TODO 錯誤，**不要用違規爬蟲當預設。**
 
@@ -92,6 +105,8 @@ npm run dev
 
 ```
 src/
+  intent.ts     x-summary vs meme-narrative
+  meme/         按需迷因敘事掃料／過濾／報告
   line/         webhook、@ 偵測、reply
   summary/      時間窗、報表文字、明顯詐騙關鍵字過濾
   x/            XProvider 介面（時間軸 + 通知）；mock 實作、api TODO
@@ -107,3 +122,4 @@ src/
 - webhook 必須驗證 LINE 簽章；不要把 `/webhook` 設成不驗簽的公開 POST。
 - 不要在 log 裡印 token。
 - 不要把金鑰寫進程式碼或 README 範例以外的地方。
+

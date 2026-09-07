@@ -1,4 +1,6 @@
 import type { AppConfig } from "../config.js";
+import { detectMentionIntent } from "../intent.js";
+import { runMemeNarrativeDigest } from "../meme/pipeline.js";
 import { runMentionSummary } from "../pipeline.js";
 import type { ReportPreferences } from "../preferences/index.js";
 import type { LastMentionStore } from "../store/last-mention.js";
@@ -62,8 +64,19 @@ export async function handleWebhookEvent(
     return "ignored";
   }
 
+  const intent = detectMentionIntent(event.message.text);
   const now = ctx.now();
   try {
+    if (intent === "meme-narrative") {
+      const { text } = await runMemeNarrativeDigest({
+        provider: ctx.config.memeProvider,
+        now,
+      });
+      await ctx.lineClient.replyText(event.replyToken, text);
+      // Do not advance X last-mention window for meme-only requests.
+      return "replied";
+    }
+
     const { text } = await runMentionSummary({
       groupId,
       store: ctx.store,

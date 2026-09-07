@@ -3,6 +3,11 @@
 .env.*
 !.env.example
 
+# local-only URLs / sync dumps (never commit)
+google_webhook_url
+grook-local-sync/
+*.tgz
+
 # runtime data (last @ timestamp, etc.)
 data/
 
